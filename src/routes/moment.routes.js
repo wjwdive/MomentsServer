@@ -1,23 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const Moment = require('../models/moment.model');
+const { sendResponse } = require('../utils/responseHelper'); // 引入统一响应工具
 
 // 获取朋友圈列表
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const moments = await Moment.getMoments(page, pageSize);
-    res.json({
-      success: true,
-      data: moments
+    sendResponse(res, 200, '获取朋友圈列表成功', {
+      moments
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: '获取朋友圈列表失败',
-      error: error.message
-    });
+    sendResponse(res, 500, '获取朋友圈列表失败', { error: error.message });
   }
 });
 
@@ -26,21 +22,11 @@ router.get('/:id', async (req, res) => {
   try {
     const moment = await Moment.getMomentById(req.params.id);
     if (!moment) {
-      return res.status(404).json({
-        success: false,
-        message: '朋友圈不存在'
-      });
+      return sendResponse(res, 404, '朋友圈不存在');
     }
-    res.json({
-      success: true,
-      data: moment
-    });
+    sendResponse(res, 200, '获取朋友圈详情成功', moment);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: '获取朋友圈详情失败',
-      error: error.message
-    });
+    sendResponse(res, 500, '获取朋友圈详情失败', { error: error.message });
   }
 });
 
