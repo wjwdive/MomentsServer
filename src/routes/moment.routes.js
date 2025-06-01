@@ -30,4 +30,21 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// 获取用户个人信息
+router.post('/user', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return sendResponse(res, 400, '缺少用户ID');
+    }
+    const user = await Moment.getMomentById(userId);
+    if (!user) {
+      return sendResponse(res, 404, '用户不存在');
+    }
+    sendResponse(res, 200, '获取用户信息成功', user);
+  } catch (error) {
+    sendResponse(res, 500, '获取用户信息失败', { error: error.message });
+  }
+});
+
 module.exports = router; 
