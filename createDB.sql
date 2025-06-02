@@ -6,6 +6,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE users (
     user_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL COMMENT '密码（加密存储）',
     avatar_url VARCHAR(255),
     is_deleted TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否删除：0-未删除，1-已删除',
     deleted_at TIMESTAMP NULL DEFAULT NULL COMMENT '删除时间',

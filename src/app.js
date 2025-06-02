@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const momentRoutes = require('./routes/moment.routes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 // 调试日志
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 // 路由
 console.log('正在注册路由...');
 app.use('/api/moments', momentRoutes);
+app.use('/api/users', userRoutes);
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
