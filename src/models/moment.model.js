@@ -44,10 +44,9 @@ class Moment {
   static async getMomentById(id) {
     try {
       const [rows] = await db.query(
-        `SELECT m.*, u.username, u.avatar_url 
-         FROM moments m 
-         LEFT JOIN users u ON m.user_id = u.user_id 
-         WHERE m.user_id = ?`,
+        `SELECT u.*
+         FROM users u 
+         WHERE u.user_id = ?`,
         [id]
       );
       return rows[0];
