@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const momentRoutes = require('./routes/moment.routes');
 const userRoutes = require('./routes/userRoutes');
+const encryptionMiddleware = require('./middleware/encryptionMiddleware');
 
 const app = express();
 // 调试日志
@@ -12,6 +13,7 @@ console.log('路由模块:', momentRoutes);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(encryptionMiddleware);
 
 // 路由
 console.log('正在注册路由...');
@@ -39,4 +41,4 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`服务器运行在端口 ${PORT}`);
-}); 
+});

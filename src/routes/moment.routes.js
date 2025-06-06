@@ -37,7 +37,13 @@ router.post('/user', async (req, res) => {
     if (!userId) {
       return sendResponse(res, 400, '缺少用户ID');
     }
-    const user = await Moment.getMomentById(userId);
+    const user = await Moment.getM// src/config/encryption.config.js
+module.exports = {
+    encryptedEndpoints: [
+        '/api/moments',
+        '/api/users'
+    ]
+};omentById(userId);
     if (!user) {
       return sendResponse(res, 404, '用户不存在');
     }
