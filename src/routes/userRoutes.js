@@ -3,15 +3,16 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db.config');
+const { sendResponse } = require('../utils/responseHelper'); // 引入统一响应工具
 
 // 注册接口
 router.post('/register', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, email } = req.body;
 
-        // 验证用户名和密码
-        if (!username || !password) {
-            return res.status(400).json({ message: '用户名和密码不能为空' });
+        // 验证用户名、密码和邮箱
+        if (!username || !password || !email) {
+            return res.status(400).json({ message: '用户名、密码和邮箱不能为空' });
         }
 
         // 检查用户名是否已存在
@@ -24,23 +25,35 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: '用户名已存在' });
         }
 
+        // 检查邮箱是否已存在
+        const [existingEmails] = await pool.query(
+            'SELECT * FROM users WHERE email = ? AND is_deleted = 0',
+            [email]
+        );
+        if (existingEmails.length > 0) {
+            return res.status(400).json({ message: '邮箱已被注册' });
+        }
+
         // 加密密码
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // 创建新用户
         const [result] = await pool.query(
-            'INSERT INTO users (username, password) VALUES (?, ?)',
-            [username, hashedPassword]
+            'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
+            [username, hashedPassword, email]
         );
 
-        res.status(201).json({
-            message: '注册成功',
-            userId: result.insertId
-        });
+        let data = {
+            userId: result.insertId,
+            username: username,
+            email: email
+        }
+        //统一返回格式
+        sendResponse(res, 200, '注册成功', data);
     } catch (error) {
         console.error('注册失败:', error);
-        res.status(500).json({ message: '服务器错误' });
+        sendResponse(res, 500, '服务器错误', null);
     }
 });
 
@@ -94,4 +107,4 @@ router.post('/login', async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;
