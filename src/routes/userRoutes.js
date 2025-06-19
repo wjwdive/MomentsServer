@@ -92,15 +92,15 @@ router.post('/login', async (req, res) => {
             { expiresIn: '24h' }
         );
 
-        res.json({
-            message: '登录成功',
-            token,
-            user: {
-                userId: user.user_id,
-                username: user.username,
-                avatarUrl: user.avatar_url
-            }
-        });
+        let data = {
+            userId: user.user_id,
+            username: user.username,
+            avatarUrl: user.avatar_url,
+            token: token
+        }
+        
+        //统一返回格式
+        sendResponse(res, 200, '登录成功', data);
     } catch (error) {
         console.error('登录失败:', error);
         res.status(500).json({ message: '服务器错误' });
