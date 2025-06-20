@@ -107,4 +107,36 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// 检查用户名是否可用
+router.post('/check-username', async (req, res) => {
+    const { username } = req.body;
+    if (!username) {
+        return sendResponse(res, 400, '用户名不能为空', null);
+    }
+    const [users] = await pool.query(
+        'SELECT user_id FROM users WHERE username = ? AND is_deleted = 0',
+        [username]
+    );
+    if (users.length > 0) {
+        return sendResponse(res, 500, '用户名已存在', { available: false });
+    }
+    sendResponse(res, 200, '用户名可用', { available: true });
+});
+
+// 检查邮箱是否可用
+router.post('/check-email', async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        return sendResponse(res, 400, '邮箱不能为空', null);
+    }
+    const [users] = await pool.query(
+        'SELECT user_id FROM users WHERE email = ? AND is_deleted = 0',
+        [email]
+    );
+    if (users.length > 0) {
+        return sendResponse(res, 500, '邮箱已存在', { available: false });
+    }
+    sendResponse(res, 200, '邮箱可用', { available: true });
+});
+
 module.exports = router;
